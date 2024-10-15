@@ -1,6 +1,8 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import webpack from "webpack";
+import { rspack } from "@rspack/core";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isRunningWebpack = !!process.env.WEBPACK;
@@ -18,7 +20,19 @@ const config = {
   entry: {
     main: "./src/index",
   },
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin(),
+    new (isRunningWebpack ? webpack.DefinePlugin : rspack.DefinePlugin)({
+      "process.env": {
+        NODE_ENV: '"development"',
+        PUBLIC_URL: '""',
+        WDS_SOCKET_HOST: undefined,
+        WDS_SOCKET_PATH: undefined,
+        WDS_SOCKET_PORT: undefined,
+        FAST_REFRESH: "true",
+      },
+    }),
+  ],
   output: {
     clean: true,
     path: isRunningWebpack
